@@ -1,17 +1,18 @@
-# --- Configuration par défaut (PC / x86) ---
+# --- Default configuration (PC / x86) ---
 CXX = g++
 TARGET = security_check_pc
 
-# --- Règle par défaut (quand tu tapes juste 'make') ---
+# --- Default rule (runs when you type 'make') ---
 all:
-	$(CXX) security_check.cpp -o $(TARGET)
+	$(CXX) src/security_check.cpp -o $(TARGET)
 
-# --- Règle pour ARM (quand tu tapes 'make arm') ---
-# Ici, on change le compilateur et le nom du fichier de sortie
+# --- ARM rule (runs when you type 'make arm') ---
+# Switches the compiler and output name for Raspberry Pi / ARM
 arm: CXX = arm-linux-gnueabihf-g++
 arm: TARGET = security_check_arm
 arm: all
 
-# --- Nettoyage ---
+# --- Clean up generated files ---
 clean:
 	rm -f security_check_pc security_check_arm
+

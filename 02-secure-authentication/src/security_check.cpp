@@ -1,32 +1,76 @@
+/**
+ * ============================================================================
+ * Module: Secure Embedded Authentication
+ * Filename: security_check.cpp
+ * Description:
+ *   Implements a secure authentication system for embedded Linux devices.
+ *   The password is never stored in plain text; only its hash is saved.
+ *   Hash algorithm: djb2
+ *
+ * Author: Danielou Mounsande
+ * Date: 2025-02-07
+ *
+ * Target Platforms: x86 / ARM (Raspberry Pi)
+ * Build: g++ -o security_check security_check.cpp
+ * ============================================================================
+ */
+
 #include <iostream>
 #include <string>
 
-// Cette fonction transforme n'importe quel mot en un nombre unique (Hash)
-// Elle ne contient JAMAIS le mot de passe secret.
-unsigned long calculer_hash(std::string mot) {
-    unsigned long hash = 5381;
-    for (char c : mot) {
-        hash = ((hash << 5) + hash) + c; // Algorithme djb2 (très connu)
+using namespace std;
+
+/**
+ * --------------------------------------------------------------------------
+ * Function: calculate_hash
+ * Description:
+ *   Converts any input string into a unique numeric hash.
+ *   The secret password itself is never stored.
+ *
+ * Parameters:
+ *   const string& input - the string to hash
+ *
+ * Returns:
+ *   unsigned long - resulting hash value
+ * --------------------------------------------------------------------------
+ */
+unsigned long calculate_hash(const string &input) {
+    unsigned long hash = 5381; // initial value recommended by djb2
+    for (char c : input) {
+        hash = ((hash << 5) + hash) + static_cast<unsigned long>(c); // hash * 33 + c
     }
     return hash;
 }
 
+/**
+ * --------------------------------------------------------------------------
+ * Main function
+ * Description:
+ *   Demonstrates a simple authentication flow. The user is prompted to enter
+ *   a key. The entered value is hashed and compared with the precomputed hash.
+ *
+ * Notes:
+ *   In a real embedded system, input could come from UART, a keypad, or secure storage.
+ * --------------------------------------------------------------------------
+ */
 int main() {
-    // Le hash de  calculé à l'avance est : 3591632766323
-    // On ne stocke QUE ce nombre.
-    const unsigned long HASH_SECRET = 8245147252682851653; 
-    std::string saisie;
+    // Precomputed hash of the secret password
+    const unsigned long SECRET_HASH = 8245147252682851653;
 
-    std::cout << "--- MERKUR SECURE SYSTEM ---" << std::endl;
-    std::cout << "Entrez la clef : ";
-    std::cin >> saisie;
+    cout << "--- LINUX SECURE SYSTEM ---" << endl;
+    cout << "Enter the key: ";
 
-    // On hache ce que l'utilisateur tape et on compare les nombres
-    if (calculer_hash(saisie) == HASH_SECRET) {
-        std::cout << "[OK] Acces autorise." << std::endl;
+    string user_input;
+    cin >> user_input;
+
+    // Compare user input hash with the stored secret hash
+    if (calculate_hash(user_input) == SECRET_HASH) {
+        cout << "[OK] Access granted." << endl;
+        // Additional actions (GPIO, secure functions) can be added here
     } else {
-        std::cout << "[ALERTE] Clef invalide !" << std::endl;
+        cout << "[ALERT] Invalid key!" << endl;
     }
 
     return 0;
 }
+
