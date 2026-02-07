@@ -1,0 +1,15 @@
+# Binaries
+*.o
+*.elf
+*.out
+security_check
+security_check_pc
+
+# Build artifacts
+build/
+bin/
+
+# Editor / OS
+.vscode/
+.DS_Store
+
