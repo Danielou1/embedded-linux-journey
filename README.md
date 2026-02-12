@@ -26,6 +26,7 @@ with a strong focus on **Embedded Linux, ARM-based systems, and security**
 | 03 – Raspberry Pi Bring-up | ✅ Completed |
 | 04 – Embedded Networking | ⏳ Planned |
 | 05 – Build Systems | 🎯 Planned |
+| 06 – C++ OOP Project: Slot Machine | 🚀 New |
 
 ---
 
@@ -60,6 +61,13 @@ Secure authentication module written in C for embedded Linux systems:
 - minimal custom Linux distribution  
 [Explore this module](./05-build-systems/README.md)
 
+### 06 – C++ OOP Project: Slot Machine (new)
+- Object-oriented C++ application  
+- Game logic and UI separation  
+- Cross-compilation for ARM target  
+- UI rendering with SDL2 on a touchscreen
+[Explore this module](./06-cpp-slot-machine/README.md)
+
 ---
 
 ## 🗺️ Learning Roadmap
@@ -74,6 +82,7 @@ Secure authentication module written in C for embedded Linux systems:
 - Raspberry Pi bring-up (headless)
 
 **Phase 3 – Advanced Embedded Systems (⏳ In Progress)**  
+- **C++ Application Development (Slot Machine)**
 - Hardware debugging: GPIO, UART
 - Networking fundamentals and secure communication  
 - Build systems: Buildroot, Yocto  
