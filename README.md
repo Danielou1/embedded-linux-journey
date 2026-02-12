@@ -23,7 +23,7 @@ with a strong focus on **Embedded Linux, ARM-based systems, and security**
 |--------|--------|
 | 01 – Linux Basics | ✅ Completed |
 | 02 – Secure Embedded Authentication | ✅ Completed |
-| 03 – Raspberry Pi Bring-up | ⏳ In Progress |
+| 03 – Raspberry Pi Bring-up | ✅ Completed |
 | 04 – Embedded Networking | ⏳ Planned |
 | 05 – Build Systems | 🎯 Planned |
 
@@ -42,10 +42,10 @@ Secure authentication module written in C for embedded Linux systems:
 - cross-compilation for x86 and ARM (Raspberry Pi)  
 [Explore this module](./02-secure-authentication/README.md)
 
-### 03 – Raspberry Pi Bring-up (planned)
+### 03 – Raspberry Pi Bring-up ✅
 - headless OS installation  
 - SSH setup  
-- UART and GPIO validation  
+- System update and verification
 [Explore this module](./03-raspberrypi-bringup/README.md)
 
 ### 04 – Embedded Networking (planned)
@@ -68,13 +68,13 @@ Secure authentication module written in C for embedded Linux systems:
 - Linux basics, shell scripting, file permissions, processes  
 - Introduction to Embedded C and ARM toolchains
 
-**Phase 2 – Embedded Systems & Security (⏳ In Progress)**  
+**Phase 2 – Embedded Systems & Security (✅ Completed)**  
 - Secure authentication and hashing techniques  
 - Cross-compilation workflows  
-- Hardware debugging: GPIO, UART
+- Raspberry Pi bring-up (headless)
 
-**Phase 3 – Advanced Embedded Systems (🎯 Target 2026)**  
-- Raspberry Pi bring-up  
+**Phase 3 – Advanced Embedded Systems (⏳ In Progress)**  
+- Hardware debugging: GPIO, UART
 - Networking fundamentals and secure communication  
 - Build systems: Buildroot, Yocto  
 - Kernel and device driver basics
