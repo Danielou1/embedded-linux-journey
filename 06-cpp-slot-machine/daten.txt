@@ -1,0 +1,35 @@
+PROJET : Slot Machine Embedded Engine (C++ OOP)
+MODULE : 06 - C++ OOP Project: Slot Machine
+DATE : 12-13 Février 2026
+ARCHITECTE : Danielou Mounsande
+
+--- RÉSUMÉ TECHNIQUE DU DÉVELOPPEMENT ---
+
+1. ARCHITECTURE LOGICIELLE (OOP) :
+   - RNG : Générateur de nombres aléatoires basé sur std::mt19937 (Mersenne Twister) avec une graine (seed) temporelle.
+   - Reel : Classe représentant un rouleau avec une collection de symboles et une logique de rotation.
+   - PayoutCalculator : Moteur de calcul des gains basé sur la comparaison des résultats.
+   - GameEngine : Orchestrateur central liant la logique métier.
+   - SdlUi : Interface graphique basée sur SDL3, séparant la logique de rendu de la logique de jeu.
+
+2. PIPELINE DE CROSS-COMPILATION (LE CŒUR DU DÉVELOPPEMENT) :
+   - Cible : Raspberry Pi (Debian Bookworm, aarch64).
+   - Hôte : WSL (Ubuntu 22.04 x86_64).
+   - Toolchain : aarch64-linux-gnu-g++ / gcc.
+   - Gestion des dépendances : Utilisation de Git Submodules pour SDL3 afin de garantir un build reproductible et auto-contenu.
+
+3. ANALYSE DÉTAILLÉE DU MAKEFILE :
+   - Multi-Target : Support de 'make all' (natif x86 pour debug rapide) et 'make rpi' (cross-compilation).
+   - Automatique Dir Creation : Utilisation de '@mkdir -p $(dir $@)' pour créer récursivement les dossiers dans 'build/' (ex: build/UI/).
+   - Intégration CMake : Le Makefile pilote CMake pour compiler SDL3 spécifiquement pour l'architecture cible avant de lier l'application.
+   - Multi-Arch Support : Configuration avancée pour utiliser les bibliothèques système arm64 (libgbm, libdrm, libGLESv2) installées sur WSL via 'dpkg --add-architecture'.
+   - KMSDRM Integration : Forçage des flags '-DSDL_VIDEO_KMSDRM=ON' et '-DSDL_UNIX_CONSOLE_BUILD=ON' pour permettre l'affichage "bare-metal" sans serveur X11/Wayland.
+   - PKG_CONFIG Management : Forçage de PKG_CONFIG_LIBDIR vers les chemins arm64 pour éviter que CMake ne tente d'utiliser les configurations x86 de l'hôte.
+
+4. DÉFIS ET SOLUTIONS :
+   - Problème d'Include : Passage de SDL2 à SDL3 nécessitant une correction des chemins (#include <SDL3/SDL.h>).
+   - Problème de Driver : Erreur "No available video device" résolue par l'activation explicite du backend KMSDRM dans le build de SDL3.
+   - Interopérabilité WSL : Correction du leakage des chemins Windows (Cygwin) dans le processus de build Linux via le forçage de PATH et PKG_CONFIG_EXECUTABLE.
+
+--- ÉTAT ACTUEL ---
+Le binaire est compilé avec succès pour aarch64 avec le support KMSDRM inclus. L'initialisation sur le Pi rencontre un problème de driver 'kmsdrm' au runtime, probablement lié aux permissions ou au chargement des modules DRM du noyau.

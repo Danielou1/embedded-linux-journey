@@ -1,66 +1,81 @@
 # Makefile for the C++ Slot Machine project
-#
-# Usage:
-#   make all  (to build for local x86 system)
-#   make rpi  (to cross-compile for Raspberry Pi aarch64)
-#   make clean (to remove build artifacts)
 
-# --- Project Configuration ---
 PROJECT_NAME = slot_machine
 SRC_DIR = .
 BUILD_DIR = build
+ROOT_DIR = $(CURDIR)
+EXTERNAL_DIR = $(ROOT_DIR)/../external
+SDL_DIR = $(EXTERNAL_DIR)/SDL
+SDL_BUILD_DIR_RPI = $(SDL_DIR)/build-rpi
 
-# Source files (all .cpp files in SRC_DIR)
-SRCS = $(wildcard $(SRC_DIR)/*.cpp)
+# Source files
+SRCS = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/UI/*.cpp)
 
-# Object files for native build (e.g., build/main.o)
+# Object files
 OBJS_NATIVE = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRCS))
-
-# Object files for RPi build (e.g., build/main_rpi.o) - distinct to avoid conflicts
 OBJS_RPI = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%_rpi.o, $(SRCS))
 
-# --- Compilers ---
-# Native (x86) C++ compiler
+# Path to the static SDL library
+SDL2_LIB_RPI = $(SDL_BUILD_DIR_RPI)/lib/libSDL3.a
+SDL2_INCLUDE_DIR_RPI = $(SDL_BUILD_DIR_RPI)/include
+
+# --- Compilers & Flags ---
 CXX_NATIVE = g++
-# Cross-compiler for Raspberry Pi (ARM 64-bit)
+CXXFLAGS_NATIVE = -Wall -Wextra -std=c++17 
+LDFLAGS_NATIVE = -lSDL3
+
 CXX_RPI = aarch64-linux-gnu-g++
+# On ajoute explicitement les includes system arm64 pour éviter les "file not found"
+CXXFLAGS_RPI = -Wall -Wextra -std=c++17 -I$(SDL2_INCLUDE_DIR_RPI) -I/usr/include/aarch64-linux-gnu
+LDFLAGS_RPI = -L$(SDL_BUILD_DIR_RPI)/lib -L/usr/lib/aarch64-linux-gnu -lSDL3 -lgbm -ldrm -lGLESv2 -lpthread -ldl
 
-# Compiler flags
-CXXFLAGS = -Wall -Wextra -std=c++17
+.PHONY: all rpi clean build_sdl_rpi
 
-# --- Targets ---
-
-.PHONY: all rpi clean
-
-# Default target: build for local x86 system
-all: $(BUILD_DIR) $(BUILD_DIR)/$(PROJECT_NAME)_x86
+all: $(BUILD_DIR)/$(PROJECT_NAME)_x86
 
 $(BUILD_DIR)/$(PROJECT_NAME)_x86: $(OBJS_NATIVE)
-	@echo "Linking native (x86) executable..."
-	$(CXX_NATIVE) $(CXXFLAGS) $(OBJS_NATIVE) -o $@
+	@mkdir -p $(dir $@)
+	$(CXX_NATIVE) $(OBJS_NATIVE) -o $@ $(LDFLAGS_NATIVE)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(BUILD_DIR)
-	@echo "Compiling $< for x86..."
-	$(CXX_NATIVE) $(CXXFLAGS) -c $< -o $@
+	@mkdir -p $(dir $@)
+	$(CXX_NATIVE) $(CXXFLAGS_NATIVE) -c $< -o $@
 
-# Target for Raspberry Pi (aarch64) cross-compilation
-rpi: $(BUILD_DIR) $(BUILD_DIR)/$(PROJECT_NAME)_rpi
+rpi: build_sdl_rpi $(BUILD_DIR)/$(PROJECT_NAME)_rpi
 
 $(BUILD_DIR)/$(PROJECT_NAME)_rpi: $(OBJS_RPI)
-	@echo "Linking RPi (aarch64) executable..."
-	$(CXX_RPI) $(CXXFLAGS) $(OBJS_RPI) -o $@
+	@echo "Linking RPi executable..."
+	$(CXX_RPI) $(OBJS_RPI) -o $@ $(LDFLAGS_RPI)
 
 $(BUILD_DIR)/%_rpi.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(BUILD_DIR)
-	@echo "Compiling $< for RPi (aarch64)..."
-	$(CXX_RPI) $(CXXFLAGS) -c $< -o $@
+	@mkdir -p $(dir $@)
+	@echo "Compiling $< for RPi..."
+	$(CXX_RPI) $(CXXFLAGS_RPI) -c $< -o $@
 
-# Create build directory
-$(BUILD_DIR):
-	@mkdir -p $(BUILD_DIR)
+build_sdl_rpi: $(SDL2_LIB_RPI)
 
-# Clean up build artifacts
+$(SDL2_LIB_RPI):
+	@echo "Configuring and Building SDL3 for RPi (KMSDRM Meticulous)..."
+	@mkdir -p $(SDL_BUILD_DIR_RPI)
+	cd $(SDL_BUILD_DIR_RPI) && \
+	export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig && \
+	cmake -S $(SDL_DIR) -B . \
+		-DCMAKE_TOOLCHAIN_FILE=$(ROOT_DIR)/aarch64-toolchain.cmake \
+		-DCMAKE_INSTALL_PREFIX=. \
+		-DSDL_STATIC=ON -DSDL_SHARED=OFF \
+		-DSDL_TEST=OFF \
+		-DSDL_VIDEO_X11=OFF \
+		-DSDL_VIDEO_WAYLAND=OFF \
+		-DSDL_VIDEO_KMSDRM=ON \
+		-DSDL_OPENGLES=ON \
+		-DSDL_UNIX_CONSOLE_BUILD=ON \
+		-DGBM_LIBRARY=/usr/lib/aarch64-linux-gnu/libgbm.so \
+		-DGBM_INCLUDE_DIR=/usr/include \
+		-DLIBDRM_LIBRARY=/usr/lib/aarch64-linux-gnu/libdrm.so \
+		-DLIBDRM_INCLUDE_DIR=/usr/include/libdrm
+	cmake --build $(SDL_BUILD_DIR_RPI) --target install -- -j$$(nproc)
+
 clean:
-	@echo "Cleaning build directory..."
 	@rm -rf $(BUILD_DIR)
+	@rm -rf $(SDL_BUILD_DIR_RPI)
+	@echo "Cleaned."

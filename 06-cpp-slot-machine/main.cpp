@@ -1,13 +1,12 @@
-#include "GameEngine.hpp"
-#include <iostream>
+#include "UI/SdlUi.hpp"
 
-int main() {
-    GameEngine game;
-    char choice;
-    do {
-        game.play();
-        std::cout << "Play again? (y/n): ";
-        std::cin >> choice;
-    } while(choice == 'y' || choice == 'Y');
+int main(int argc, char* argv[]) {
+    // Suppress unused parameter warnings
+    (void)argc;
+    (void)argv;
+    
+    SdlUi ui;
+    ui.run();
+
     return 0;
 }
