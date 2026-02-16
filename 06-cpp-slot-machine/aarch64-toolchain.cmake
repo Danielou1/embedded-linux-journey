@@ -7,10 +7,11 @@ set(CMAKE_C_COMPILER aarch64-linux-gnu-gcc)
 set(CMAKE_CXX_COMPILER aarch64-linux-gnu-g++)
 
 # Forcer pkg-config Linux
-set(PKG_CONFIG_EXECUTABLE "/usr/bin/pkg-config")
+find_program(PKG_CONFIG_EXECUTABLE NAMES pkg-config)
 
 # Configuration Multi-arch Ubuntu
 set(CMAKE_LIBRARY_ARCHITECTURE aarch64-linux-gnu)
+set(CMAKE_STAGING_PREFIX ${CMAKE_BINARY_DIR}/staging)
 set(CMAKE_FIND_ROOT_PATH /usr/lib/aarch64-linux-gnu /usr/include/aarch64-linux-gnu /usr/aarch64-linux-gnu)
 
 # On autorise la recherche dans les dossiers système de l'hôte pour les libs de la cible
