@@ -22,6 +22,13 @@ This module documents the development of a professional-grade Slot Machine engin
 - `RNG.cpp/hpp`, `Reel.cpp/hpp`, `PayoutCalculator.cpp/hpp`: Modular engine components.
 - `aarch64-toolchain.cmake`: CMake configuration for cross-compilation.
 - `daten.txt`: Detailed technical log of the development process.
+- All `.hpp` and `.cpp` files are now thoroughly documented with Doxygen comments.
+
+## 📖 Code Documentation
+The entire C++ codebase for this project has been meticulously documented using Doxygen.
+-   **Purpose:** To provide clear explanations of classes, methods, and their functionalities.
+-   **Content:** Every public API, class definition, method signature, and significant internal logic is accompanied by detailed Doxygen comments.
+-   **Generation:** You can generate the full HTML documentation by running Doxygen in the project root after configuring `Doxyfile`. This will create an `html/` directory with an `index.html` entry point.
 
 ## 🚀 Build Instructions
 
@@ -45,4 +52,5 @@ This command will:
 - ✅ C++ OOP Logic: **Complete**
 - ✅ Cross-Compilation Pipeline: **Functional**
 - ✅ SDL3 Static Linking: **Complete**
+- ✅ Code Documentation (Doxygen): **Complete**
 - ⏳ KMSDRM Runtime Initialization: **In Progress** (Binary compiled, driver verification ongoing on target).
