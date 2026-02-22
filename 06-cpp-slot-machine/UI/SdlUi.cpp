@@ -1,6 +1,7 @@
 #include "SdlUi.hpp"
 #include <iostream>
 
+
 SdlUi::SdlUi() : m_isRunning(false), m_lastWin(0), m_window(nullptr), m_renderer(nullptr) {}
 
 SdlUi::~SdlUi() {
@@ -22,14 +23,14 @@ bool SdlUi::init() {
     // Diagnostic des entrées (Souris et Tactile)
     int num_mice;
     SDL_MouseID* mice = SDL_GetMice(&num_mice);
-    SDL_Log("Number of mice detected: %d", num_mice);
+    std::cout << "Number of mice detected: " << num_mice << std::endl;
     SDL_free(mice);
 
     int num_touch;
     SDL_TouchID* touch_devices = SDL_GetTouchDevices(&num_touch);
-    SDL_Log("Number of touch devices: %d", num_touch);
+    std::cout << "Number of touch devices: " << num_touch << std::endl;
     for(int i=0; i<num_touch; ++i) {
-        SDL_Log("Touch Device %d: %s", i, SDL_GetTouchDeviceName(touch_devices[i]));
+        std::cout << "Touch Device " << i << ": " << SDL_GetTouchDeviceName(touch_devices[i]) << std::endl;
     }
     SDL_free(touch_devices);
 
