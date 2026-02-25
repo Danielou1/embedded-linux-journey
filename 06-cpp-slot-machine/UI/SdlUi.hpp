@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h> // Include SDL_ttf header
 #include <string>
 #include <vector>
 #include "../GameEngine.hpp"
@@ -25,4 +26,5 @@ private:
 
     SDL_Window* m_window;
     SDL_Renderer* m_renderer;
+    TTF_Font* m_font; // Add font member variable
 };

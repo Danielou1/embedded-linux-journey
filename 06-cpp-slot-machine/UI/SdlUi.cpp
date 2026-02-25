@@ -1,8 +1,9 @@
 #include "SdlUi.hpp"
 #include <iostream>
+#include <SDL3_ttf/SDL_ttf.h>
 
 
-SdlUi::SdlUi() : m_isRunning(false), m_lastWin(0), m_window(nullptr), m_renderer(nullptr) {}
+SdlUi::SdlUi() : m_isRunning(false), m_lastWin(0), m_window(nullptr), m_renderer(nullptr), m_font(nullptr) {}
 
 SdlUi::~SdlUi() {
     clean();
@@ -20,6 +21,29 @@ bool SdlUi::init() {
         return false;
     }
 
+    // Initialize SDL_ttf
+    if (!TTF_Init()) {
+        SDL_Log("TTF_Init failed: %s", SDL_GetError());
+        return false;
+    }
+
+    // Load font
+    // We use a standard vector font for stability.
+    m_font = TTF_OpenFont("/usr/share/fonts/truetype/roboto/Roboto-Regular.ttf", 40); 
+    if (m_font) {
+        SDL_Log("Loaded Roboto successfully.");
+    } else {
+        SDL_Log("Roboto not found, trying DejaVu...");
+        m_font = TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 40);
+        if (m_font) SDL_Log("Loaded DejaVu successfully.");
+    }
+
+    if (!m_font) {
+        SDL_Log("CRITICAL: No standard fonts found!");
+        return false;
+    }
+
+
     // Diagnostic des entrées (Souris et Tactile)
     int num_mice;
     SDL_MouseID* mice = SDL_GetMice(&num_mice);
@@ -33,6 +57,7 @@ bool SdlUi::init() {
         std::cout << "Touch Device " << i << ": " << SDL_GetTouchDeviceName(touch_devices[i]) << std::endl;
     }
     SDL_free(touch_devices);
+
 
     m_window = SDL_CreateWindow("Slot Machine", 800, 480, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
     if (!m_window) {
@@ -102,15 +127,43 @@ void SdlUi::render() {
     for (int i = 0; i < 3; ++i) {
         SDL_FRect rect = { (float)startX + i * (reelW + spacing), (float)startY, (float)reelW, (float)reelH };
         SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-        
+        SDL_RenderFillRect(m_renderer, &rect); // Draw white background for the reel
+
         if (i < (int)m_lastResult.size()) {
             std::string sym = m_lastResult[i];
-            if (sym == "🍒") SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
-            else if (sym == "🍋") SDL_SetRenderDrawColor(m_renderer, 255, 255, 0, 255);
-            else if (sym == "🔔") SDL_SetRenderDrawColor(m_renderer, 255, 180, 0, 255);
-            else if (sym == "7️⃣") SDL_SetRenderDrawColor(m_renderer, 0, 0, 255, 255);
+            
+            // Render text
+            SDL_Surface* textSurface = TTF_RenderText_Blended(m_font, sym.c_str(), 0, {0, 0, 0, 255}); // Black text
+            
+            if (textSurface == nullptr) {
+                static bool loggedOnce = false;
+                if (!loggedOnce) {
+                    SDL_Log("Emoji render failed, falling back to '?'. Error: %s", SDL_GetError());
+                    loggedOnce = true;
+                }
+                // Fallback to a simple character that is guaranteed to exist in standard fonts
+                textSurface = TTF_RenderText_Blended(m_font, "?", 0, {0, 0, 0, 255});
+            }
+
+            if (textSurface != nullptr) {
+                SDL_Texture* textTexture = SDL_CreateTextureFromSurface(m_renderer, textSurface);
+                if (textTexture == nullptr) {
+                    SDL_Log("Unable to create texture from rendered text! SDL Error: %s", SDL_GetError());
+                } else {
+                    float textW, textH;
+                    SDL_GetTextureSize(textTexture, &textW, &textH);
+                    SDL_FRect renderQuad = { 
+                        rect.x + (reelW - textW) / 2, 
+                        rect.y + (reelH - textH) / 2, 
+                        textW, 
+                        textH 
+                    };
+                    SDL_RenderTexture(m_renderer, textTexture, nullptr, &renderQuad);
+                    SDL_DestroyTexture(textTexture);
+                }
+                SDL_DestroySurface(textSurface);
+            }
         }
-        SDL_RenderFillRect(m_renderer, &rect);
     }
 
     SDL_FRect btnRect = { (float)(w - 240) / 2, (float)h - 100, 240.0f, 70.0f };
@@ -130,6 +183,8 @@ void SdlUi::run() {
 }
 
 void SdlUi::clean() {
+    if (m_font) TTF_CloseFont(m_font);
+    TTF_Quit();
     if (m_renderer) SDL_DestroyRenderer(m_renderer);
     if (m_window) SDL_DestroyWindow(m_window);
     SDL_Quit();

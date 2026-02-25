@@ -2,7 +2,7 @@
 #include "RNG.hpp"
 
 Reel::Reel() {
-    symbols = {"🍒", "🍋", "🔔", "7️⃣"};
+    symbols = {"CHERRY", "LEMON", "DIAMOND", "7"};
 }
 
 std::string Reel::spin() {
