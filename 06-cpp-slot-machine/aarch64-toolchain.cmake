@@ -11,8 +11,7 @@ find_program(PKG_CONFIG_EXECUTABLE NAMES pkg-config)
 
 # Configuration Multi-arch Ubuntu
 set(CMAKE_LIBRARY_ARCHITECTURE aarch64-linux-gnu)
-set(CMAKE_STAGING_PREFIX ${CMAKE_BINARY_DIR}/staging)
-set(CMAKE_FIND_ROOT_PATH /usr/lib/aarch64-linux-gnu /usr/include/aarch64-linux-gnu /usr/aarch64-linux-gnu)
+set(CMAKE_FIND_ROOT_PATH /usr/lib/aarch64-linux-gnu /usr/include/aarch64-linux-gnu /usr/aarch64-linux-gnu /usr/include /usr/lib)
 
 # On autorise la recherche dans les dossiers système de l'hôte pour les libs de la cible
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)

@@ -1,38 +1,35 @@
 /**
  * @file RNG.hpp
+ * @brief Random Number Generator for the Slot Machine.
  * @author Danielou Mounsande
- * @brief Defines a Random Number Generator (RNG) utility class.
- * 
- * This class provides a simple interface for generating random numbers
- * within a specified range, using the Mersenne Twister algorithm.
+ * @date 2026
  */
+
 #pragma once
 #include <random>
 
 /**
  * @class RNG
- * @brief A wrapper for the Mersenne Twister random number generator.
+ * @brief Provides a robust pseudo-random number generation system.
  * 
- * This class encapsulates the std::mt19937 random number generator engine
- * to provide a convenient way to generate random integers.
+ * Uses the Mersenne Twister engine (std::mt19937) to ensure high-quality 
+ * randomness for the slot machine spins.
  */
 class RNG {
 public:
     /**
-     * @brief Constructs a new RNG object.
-     * 
-     * Seeds the Mersenne Twister engine with a random device.
+     * @brief Constructor that seeds the generator using the current system time.
      */
     RNG();
 
     /**
      * @brief Generates a random integer within a specified range.
-     * @param min The minimum value of the range (inclusive).
-     * @param max The maximum value of the range (inclusive).
-     * @return An integer containing the randomly generated number.
+     * @param min The minimum inclusive value.
+     * @param max The maximum inclusive value.
+     * @return A random integer between min and max.
      */
     int generate(int min, int max);
 
 private:
-    std::mt19937 mt; ///< The core Mersenne Twister engine.
+    std::mt19937 mt; /**< Mersenne Twister 19937 generator engine. */
 };

@@ -10,6 +10,8 @@ UI_DIR = UI
 EXTERNAL_DIR = $(CURDIR)/../external
 SDL_DIR = $(EXTERNAL_DIR)/SDL
 SDL_BUILD_DIR = $(SDL_DIR)/build-rpi
+SDL_TTF_DIR = $(EXTERNAL_DIR)/SDL_ttf
+SDL_TTF_BUILD_DIR = $(SDL_TTF_DIR)/build-rpi
 STAGING_DIR = $(SDL_BUILD_DIR)/staging
 
 # --- Toolchain ---
@@ -19,6 +21,7 @@ TOOLCHAIN = aarch64-toolchain.cmake
 # --- Compilation Flags ---
 CXXFLAGS = -Wall -Wextra -std=c++17 -O3 \
            -I$(STAGING_DIR)/include \
+           -I$(STAGING_DIR)/include/SDL3 \
            -I$(UI_DIR) \
            -I$(SRC_DIR)
 
@@ -27,6 +30,7 @@ LDFLAGS = -L$(STAGING_DIR)/lib \
           -L/usr/lib/aarch64-linux-gnu \
           -Wl,--start-group \
           -lSDL3 \
+          -lSDL3_ttf \
           -lgbm \
           -ldrm \
           -lEGL \
@@ -85,12 +89,32 @@ sdl_build:
 		-DSDL_UNIX_CONSOLE_BUILD=ON
 	cmake --build $(SDL_BUILD_DIR) --target install -j$$(nproc)
 
+# Build SDL3_ttf for RPi
+sdl_ttf_build:
+	@echo "Building SDL3_ttf for RPi..."
+	@mkdir -p $(SDL_TTF_BUILD_DIR)
+	cd $(SDL_TTF_BUILD_DIR) && \
+	export PKG_CONFIG_LIBDIR=/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig && \
+	export PKG_CONFIG_SYSROOT_DIR=/ && \
+	cmake $(SDL_TTF_DIR) -B . \
+		-DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/$(TOOLCHAIN) \
+		-DCMAKE_INSTALL_PREFIX=$(STAGING_DIR) \
+		-DCMAKE_PREFIX_PATH=$(STAGING_DIR) \
+		-DSDL3_DIR=$(STAGING_DIR)/lib/cmake/SDL3 \
+		-DSDLTTF_SAMPLES=OFF \
+		-DSDLTTF_VENDORED=ON \
+		-DBUILD_SHARED_LIBS=OFF
+	cmake --build $(SDL_TTF_BUILD_DIR) --target install -j$$(nproc)
+
 clean:
 	rm -rf $(BUILD_DIR) $(PROJECT)
 	@echo "Cleaned project files."
 
 clean-all: clean
-	rm -rf $(SDL_BUILD_DIR)
-	@echo "Cleaned everything (including SDL build)."
+	rm -rf $(SDL_BUILD_DIR) $(SDL_TTF_BUILD_DIR)
+	@echo "Cleaned everything (including SDL builds)."
 
-.PHONY: all clean clean-all sdl_build
+# Build all dependencies
+deps: sdl_build sdl_ttf_build
+
+.PHONY: all clean clean-all sdl_build sdl_ttf_build deps

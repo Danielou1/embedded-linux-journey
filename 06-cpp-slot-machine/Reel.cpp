@@ -13,7 +13,7 @@
  * Cherry, Lemon, Bell, Seven.
  */
 Reel::Reel() {
-    symbols = {"🍒", "🍋", "🔔", "7️⃣"};
+    symbols = {"CHERRY", "LEMON", "DIAMOND", "7"};
 }
 
 /**

@@ -1,28 +1,23 @@
 /**
  * @file PayoutCalculator.hpp
+ * @brief Logic for calculating wins based on spin results.
  * @author Danielou Mounsande
- * @brief Defines the PayoutCalculator class for the slot machine.
- * 
- * This class is responsible for calculating the payout based on the
- * results of a spin.
  */
+
 #pragma once
 #include <vector>
 #include <string>
 
 /**
  * @class PayoutCalculator
- * @brief Calculates the payout for a given spin result.
- * 
- * It determines the winning amount based on the combination of symbols
- * obtained from the reels.
+ * @brief Logic engine to determine the payout amount for a given set of symbols.
  */
 class PayoutCalculator {
 public:
     /**
-     * @brief Calculates the payout based on the symbols.
-     * @param result A constant reference to a vector of strings representing the symbols from each reel.
-     * @return An integer representing the calculated payout amount. Returns 0 for no win.
+     * @brief Calculates the score based on the symbol combination.
+     * @param result A vector containing the symbols resulting from a spin.
+     * @return The payout amount (e.g., 100 for a jackpot, 20 for a pair).
      */
     int calculate(const std::vector<std::string>& result);
 };

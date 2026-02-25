@@ -1,11 +1,9 @@
 /**
  * @file GameEngine.hpp
+ * @brief Main orchestrator for the slot machine game logic.
  * @author Danielou Mounsande
- * @brief Defines the main logic for the slot machine game.
- * 
- * This class orchestrates the game flow, including spinning the reels
- * and calculating the payout based on the result.
  */
+
 #pragma once
 #include "Reel.hpp"
 #include "PayoutCalculator.hpp"
@@ -14,33 +12,34 @@
 
 /**
  * @class GameEngine
- * @brief Manages the core gameplay of the slot machine.
+ * @brief Coordinates reels and payout calculations.
  * 
- * This class holds the reels, initiates a spin, and uses a PayoutCalculator
- * to determine the win amount.
+ * This class acts as the bridge between the individual components of the game,
+ * handling the spin process and evaluating the results.
  */
 class GameEngine {
 private:
-    Reel reel1, reel2, reel3;  ///< The three reels of the slot machine.
-    PayoutCalculator payout;   ///< The calculator for determining payouts.
+    Reel reel1;            /**< First reel. */
+    Reel reel2;            /**< Second reel. */
+    Reel reel3;            /**< Third reel. */
+    PayoutCalculator payout; /**< Payout calculation logic. */
 
 public:
     /**
-     * @brief Runs a simple command-line version of the game.
-     * @deprecated This method is for legacy command-line interface and testing.
+     * @brief Legacy CLI play function for terminal-based testing.
      */
     void play();
 
     /**
-     * @brief Spins all the reels and returns the symbols.
-     * @return A vector of strings representing the symbol from each reel.
+     * @brief Executes a spin on all three reels.
+     * @return A vector of strings representing the three winning symbols.
      */
     std::vector<std::string> spin();
 
     /**
-     * @brief Calculates the payout for a given spin result.
-     * @param result A vector of strings representing the symbols from a spin.
-     * @return The integer value of the payout.
+     * @brief Retrieves the payout for a specific spin result.
+     * @param result The symbols to evaluate.
+     * @return The calculated score.
      */
     int getPayout(const std::vector<std::string>& result);
 };
