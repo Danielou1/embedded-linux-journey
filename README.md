@@ -1,4 +1,4 @@
-kkk# Embedded Linux Journey
+# Embedded Linux Journey
 
 This repository documents my **step-by-step learning journey** to become an
 **Embedded Linux Engineer**.
@@ -61,12 +61,12 @@ Secure authentication module written in C for embedded Linux systems:
 - minimal custom Linux distribution  
 [Explore this module](./05-build-systems/README.md)
 
-### 06 – C++ OOP Project: Slot Machine
-- Object-oriented C++ application  
-- Game logic and UI separation  
-- Cross-compilation for ARM target  
-- UI rendering with SDL2 on a touchscreen
-- **Thoroughly documented with Doxygen comments.**
+### 06 – C++ OOP Project: Slot Machine ✅
+Modern C++ application featuring a modular game engine and hardware-accelerated UI.
+- **Architecture:** Clean C++17 OOP with logic/UI separation.
+- **Graphics:** SDL3 with KMSDRM backend (no X11/Wayland required).
+- **Embedded:** Custom cross-compilation pipeline for aarch64 (RPi 4).
+- **Documentation:** Fully documented with professional Doxygen standards.
 [Explore this module](./06-cpp-slot-machine/README.md)
 
 ---
